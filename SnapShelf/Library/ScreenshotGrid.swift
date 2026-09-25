@@ -34,7 +34,36 @@ struct ScreenshotGrid: View {
     @State private var isConfirmingEmptyRecentlyDeleted = false
     @State private var isTargetedForDrop = false
 
+    /// Cell frames in `contentSpace`, keyed by screenshot ID, used to hit-test the marquee.
+    /// A plain reference type (not `@Observable`) so recording a frame every time a cell
+    /// appears doesn't re-render the grid — only the `@State` vars below do that.
+    @State private var cellFrameStore = CellFrameStore()
+
+    /// Where the current marquee drag started, in `contentSpace`. `nil` outside a drag.
+    @State private var dragStartPoint: CGPoint?
+    /// The drag's live end point, in `contentSpace`. Also nudged by `tickAutoscroll()` so it
+    /// keeps tracking the pointer's position relative to content that has scrolled underneath it.
+    @State private var dragContentPoint: CGPoint?
+    /// `selectedIDs` as it stood before the current drag started — replace starts from empty,
+    /// extend/toggle start from the existing selection.
+    @State private var dragBaseSelection: Set<UUID> = []
+    @State private var dragMode: MarqueeSelection.Mode = .replace
+    /// The live marquee rectangle, in `contentSpace`; drawn by the overlay while non-nil.
+    @State private var marqueeRect: CGRect?
+
+    @State private var scrollPosition = ScrollPosition()
+    @State private var contentOffsetY: CGFloat = 0
+    @State private var viewportHeight: CGFloat = 0
+    @State private var contentHeight: CGFloat = 0
+    /// Runs while a drag's pointer sits in an edge band, scrolling the grid and re-running the
+    /// hit test each tick. `nil` whenever no drag is in progress or the pointer isn't at an edge.
+    @State private var autoscrollTask: Task<Void, Never>?
+
     private let gridSpacing: CGFloat = 16
+
+    /// Named coordinate space shared by cell frame measurement, the marquee drag gesture, and
+    /// the marquee overlay, so all three agree on the same origin.
+    private nonisolated static let contentSpace = "ScreenshotGrid.content"
 
     /// Stored (rather than re-trimmed from `query` on every access) so `emptyState` can tell a
     /// no-results search apart from a genuinely empty section without redoing the trim.
@@ -93,7 +122,15 @@ struct ScreenshotGrid: View {
             InspectorView(screenshots: orderedSelection())
                 .inspectorColumnWidth(min: 220, ideal: 260, max: 360)
         }
-        .onDeleteCommand { softDeleteSelected() }
+        .onDeleteCommand {
+            // In Recently Deleted, `softDeleteSelected` is a no-op (it filters out items that
+            // are already deleted), so ⌫ there means "delete for good" instead.
+            if section == .recentlyDeleted {
+                if !selectedIDs.isEmpty { isConfirmingDeleteForever = true }
+            } else {
+                softDeleteSelected()
+            }
+        }
         .onCopyCommand {
             let ordered = orderedSelection()
             guard !ordered.isEmpty else { return [] }
@@ -142,6 +179,18 @@ struct ScreenshotGrid: View {
                             isRecentlyDeleted: section == .recentlyDeleted,
                             thumbnailSize: thumbnailSize
                         )
+                        .onGeometryChange(for: CGRect.self) {
+                            $0.frame(in: .named(Self.contentSpace))
+                        } action: { newFrame in
+                            cellFrameStore.frames[screenshot.id] = newFrame
+                        }
+                        .onAppear { cellFrameStore.visibleIDs.insert(screenshot.id) }
+                        .onDisappear {
+                            cellFrameStore.visibleIDs.remove(screenshot.id)
+                            // An offscreen cell isn't re-measured when the layout changes, so its
+                            // frame goes stale. Kept mid-drag so rows autoscrolled past stay selected.
+                            if dragStartPoint == nil { cellFrameStore.frames[screenshot.id] = nil }
+                        }
                         .onTapGesture {
                             // `count: 2` followed by `count: 1` gestures make every single click
                             // wait out the double-click timeout before firing. Reading the real
@@ -157,12 +206,44 @@ struct ScreenshotGrid: View {
                     }
                 }
                 .padding(gridSpacing)
+                // Extends the draggable area to the bottom of the viewport even when the grid
+                // itself is shorter, so a marquee drag works in the empty space below a short
+                // section — matching Finder.
+                .frame(minHeight: viewportHeight, alignment: .top)
                 .background {
                     // Tapping the gaps between cells clears the selection, matching Finder.
+                    // `DragGesture(minimumDistance: 3)` coexists with the tap: a click that
+                    // never crosses the threshold falls through to `onTapGesture`.
                     Color.clear
                         .contentShape(Rectangle())
                         .onTapGesture { selectedIDs.removeAll() }
+                        .gesture(marqueeDragGesture)
                 }
+                .overlay(alignment: .topLeading) {
+                    if let marqueeRect {
+                        Rectangle()
+                            .fill(Color.accentColor.opacity(0.15))
+                            .overlay(Rectangle().strokeBorder(Color.accentColor, lineWidth: 1))
+                            .frame(width: marqueeRect.width, height: marqueeRect.height)
+                            .offset(x: marqueeRect.minX, y: marqueeRect.minY)
+                            .allowsHitTesting(false)
+                    }
+                }
+                // After `.background`/`.overlay`, so the drag gesture and the marquee rectangle
+                // sit inside this space too — not just the cells.
+                .coordinateSpace(.named(Self.contentSpace))
+            }
+            .scrollPosition($scrollPosition)
+            .onScrollGeometryChange(for: ScrollGeometrySnapshot.self) { geometry in
+                ScrollGeometrySnapshot(
+                    offsetY: geometry.contentOffset.y,
+                    containerHeight: geometry.containerSize.height,
+                    contentHeight: geometry.contentSize.height
+                )
+            } action: { _, newValue in
+                contentOffsetY = newValue.offsetY
+                viewportHeight = newValue.containerHeight
+                contentHeight = newValue.contentHeight
             }
             .onAppear { gridWidth = geometry.size.width }
             .onChange(of: geometry.size.width) { _, newValue in gridWidth = newValue }
@@ -186,6 +267,98 @@ struct ScreenshotGrid: View {
             quickLookURL = url
             return .handled
         }
+        // Only fires while the grid is in the responder chain, so the search field keeps its
+        // own Select All over its own text.
+        .onCommand(#selector(NSText.selectAll(_:))) {
+            selectedIDs = Set(screenshots.map(\.id))
+        }
+        .onDisappear { stopAutoscrollLoop() }
+    }
+
+    // MARK: - Marquee selection
+
+    private var marqueeDragGesture: some Gesture {
+        DragGesture(minimumDistance: 3, coordinateSpace: .named(Self.contentSpace))
+            .onChanged { value in
+                if dragStartPoint == nil {
+                    dragStartPoint = value.startLocation
+                    dragMode = MarqueeSelection.Mode(modifiers: NSEvent.modifierFlags)
+                    dragBaseSelection = dragMode == .replace ? [] : selectedIDs
+                }
+                dragContentPoint = value.location
+                updateMarqueeSelection(at: value.location)
+                manageAutoscroll()
+            }
+            .onEnded { _ in endMarqueeDrag() }
+    }
+
+    private func updateMarqueeSelection(at point: CGPoint) {
+        guard let start = dragStartPoint else { return }
+        let rect = MarqueeSelection.rect(from: start, to: point)
+        marqueeRect = rect
+        let hits = MarqueeSelection.hits(in: rect, frames: cellFrameStore.frames, orderedIDs: screenshots.map(\.id))
+        selectedIDs = MarqueeSelection.selection(base: dragBaseSelection, hits: Set(hits), mode: dragMode)
+        if let firstHit = hits.first { lastClickedID = firstHit }
+    }
+
+    private func endMarqueeDrag() {
+        dragStartPoint = nil
+        dragContentPoint = nil
+        marqueeRect = nil
+        stopAutoscrollLoop()
+        // Drop frames of cells that scrolled offscreen during the drag, now they can go stale.
+        cellFrameStore.frames = cellFrameStore.frames.filter { cellFrameStore.visibleIDs.contains($0.key) }
+    }
+
+    /// Starts the autoscroll loop when the drag's pointer enters an edge band and stops it once
+    /// the pointer leaves — called after every drag update so the loop always matches the
+    /// pointer's current position.
+    private func manageAutoscroll() {
+        guard let point = dragContentPoint else { return }
+        let pointerViewportY = point.y - contentOffsetY
+        let delta = MarqueeSelection.autoscrollDelta(pointerY: pointerViewportY, viewportHeight: viewportHeight)
+        if delta != 0 {
+            startAutoscrollLoopIfNeeded()
+        } else {
+            stopAutoscrollLoop()
+        }
+    }
+
+    private func startAutoscrollLoopIfNeeded() {
+        guard autoscrollTask == nil else { return }
+        autoscrollTask = Task {
+            while !Task.isCancelled {
+                tickAutoscroll()
+                try? await Task.sleep(for: .milliseconds(16))
+            }
+        }
+    }
+
+    private func stopAutoscrollLoop() {
+        autoscrollTask?.cancel()
+        autoscrollTask = nil
+    }
+
+    /// One autoscroll step: nudges the scroll offset toward the edge the pointer is in, then
+    /// shifts the content-space drag point by the same amount — the mouse didn't move, the
+    /// content did — and re-runs the hit test from there.
+    private func tickAutoscroll() {
+        guard let point = dragContentPoint, viewportHeight > 0, contentHeight > viewportHeight else { return }
+        let pointerViewportY = point.y - contentOffsetY
+        let delta = MarqueeSelection.autoscrollDelta(pointerY: pointerViewportY, viewportHeight: viewportHeight)
+        guard delta != 0 else { return }
+
+        let maxOffset = contentHeight - viewportHeight
+        let newOffset = min(max(contentOffsetY + delta, 0), maxOffset)
+        let appliedDelta = newOffset - contentOffsetY
+        guard appliedDelta != 0 else { return }
+
+        contentOffsetY = newOffset
+        scrollPosition.scrollTo(y: newOffset)
+
+        let shiftedPoint = CGPoint(x: point.x, y: point.y + appliedDelta)
+        dragContentPoint = shiftedPoint
+        updateMarqueeSelection(at: shiftedPoint)
     }
 
     /// Each cell is padded out to `thumbnailSize + 16` (see `ScreenshotCell`), so the grid's
@@ -512,6 +685,22 @@ struct ScreenshotGrid: View {
         case .largestFirst: return [SortDescriptor(\.byteSize, order: .reverse)]
         }
     }
+}
+
+/// Cell frames for marquee hit-testing, keyed by screenshot ID. A plain class (not
+/// `@Observable`) so writing into it from `onGeometryChange` never invalidates the grid —
+/// only the `@State` selection/marquee values in `ScreenshotGrid` do that.
+private final class CellFrameStore {
+    var frames: [UUID: CGRect] = [:]
+    var visibleIDs: Set<UUID> = []
+}
+
+/// What `ScreenshotGrid` tracks from `onScrollGeometryChange`, for autoscroll math and to
+/// extend the grid's draggable area to the bottom of a short viewport.
+private struct ScrollGeometrySnapshot: Equatable {
+    var offsetY: CGFloat
+    var containerHeight: CGFloat
+    var contentHeight: CGFloat
 }
 
 /// One grid cell: a square-ish thumbnail, the file name (middle-truncated to one line), and a

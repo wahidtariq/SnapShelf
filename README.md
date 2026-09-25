@@ -130,6 +130,8 @@ Once enabled, it offers a one-tap **Clean Up Desktop…** to move existing scree
 | Action | Shortcut |
 |---|---|
 | Open Library | ⌘0 |
+| Select by dragging | Click and drag over the grid (⇧ adds, ⌘ toggles) |
+| Select All | ⌘A |
 | Quick Look selection | Space |
 | Copy selection | ⌘C |
 | Paste / drop to import | ⌘V, or drag files in |
@@ -158,7 +160,7 @@ After that, you can optionally delete `~/Library/Application Support/SnapShelf` 
 
 - **Not sandboxed.** SnapShelf edits another app's (`com.apple.screencapture`'s) preferences, which the App Sandbox doesn't allow — so it isn't, and can't be, Mac App Store-ready.
 - **Signed with a Personal Team** (`DEVELOPMENT_TEAM: M233Y22CJD` in `project.yml`), automatically. Launch at login is only reliable from a signed copy running in `/Applications` (see [Install](#install)) — a Debug build launched from Xcode registers DerivedData's copy as the login item instead.
-- **No app icon yet** — `AppIcon.appiconset` only has slot definitions, no actual images.
+- **App icon** is an Icon Composer file (`SnapShelf/Resources/AppIcon.icon`); the generator scripts and design renders live in `design/icon/`.
 - **PDFs are skipped for OCR.** `TextRecognitionService` returns an empty string for PDFs rather than rendering a page through Core Graphics first; screenshots are overwhelmingly PNG/HEIC in practice.
 
 ## Project structure

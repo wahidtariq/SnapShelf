@@ -20,6 +20,7 @@
 		513443E45A53E002E4034FAC /* RetentionService.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE9C3C08F2255E564DACBDDA /* RetentionService.swift */; };
 		54614DF8AB95639D853311A4 /* AppIcon.icon in Resources */ = {isa = PBXBuildFile; fileRef = 1C5530CA14DE56B2ED8AAE02 /* AppIcon.icon */; };
 		59D5FBEDEF1E3B79CA1A757C /* TextRecognitionService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9752D971D040B08F9055AF90 /* TextRecognitionService.swift */; };
+		5C4458D5349C702EE660FB37 /* MarqueeSelectionTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1ABE43FBF960C331A6ABDCB2 /* MarqueeSelectionTests.swift */; };
 		5EFA4081D66F60E9AF9F0400 /* AppState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D779E0908A7D95F53FFD618 /* AppState.swift */; };
 		61E5DC76C20205641F23951F /* CaptureLocationServiceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7D62DDE867513746DA7FB88D /* CaptureLocationServiceTests.swift */; };
 		664E3787A38268424AD938BE /* PasteboardService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 83F2BE688686308D922B0828 /* PasteboardService.swift */; };
@@ -46,6 +47,7 @@
 		E0CC23E6B3CB6E5879B99C20 /* DesktopCleanupService.swift in Sources */ = {isa = PBXBuildFile; fileRef = C8C128B748F781D43F094C01 /* DesktopCleanupService.swift */; };
 		E5ECE096A9EA3807979BC7BB /* AppShortcuts.swift in Sources */ = {isa = PBXBuildFile; fileRef = EBCAFDF7BB91538035D1D45D /* AppShortcuts.swift */; };
 		E9BE3AB4173F52DB26B85027 /* LibraryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B46EF5FEE8524A8F06D1FDB6 /* LibraryView.swift */; };
+		EAF20D9CDF21B6C06BD68713 /* MarqueeSelection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 41A2F8970412C9C2E70ECEDB /* MarqueeSelection.swift */; };
 		F517D42CC4CC2330B9343237 /* LibraryCommands.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8B4373CB683C1E0FB59ED19B /* LibraryCommands.swift */; };
 /* End PBXBuildFile section */
 
@@ -63,12 +65,14 @@
 		055D17D3206EF5BD44B97FA7 /* Screenshot.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Screenshot.swift; sourceTree = "<group>"; };
 		092CF80C4EFCE9E5448E3783 /* SnapShelfTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = SnapShelfTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		0AABAEF46452007F5B365F1A /* CopiedToast.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CopiedToast.swift; sourceTree = "<group>"; };
+		1ABE43FBF960C331A6ABDCB2 /* MarqueeSelectionTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MarqueeSelectionTests.swift; sourceTree = "<group>"; };
 		1B51BA2E3F3117DABBCB17BB /* SingleInstanceCoordinator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SingleInstanceCoordinator.swift; sourceTree = "<group>"; };
 		1C5530CA14DE56B2ED8AAE02 /* AppIcon.icon */ = {isa = PBXFileReference; path = AppIcon.icon; sourceTree = "<group>"; };
 		2815321E5C3BBA842D0CA04B /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
 		2F6CF947E6EA783FCC7C0626 /* MenuBarPanelRenderingTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MenuBarPanelRenderingTests.swift; sourceTree = "<group>"; };
 		3C4D07DF10CC24F8C97FC951 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		3D23BFBD330CE1CC85E32509 /* CaptureLocationService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CaptureLocationService.swift; sourceTree = "<group>"; };
+		41A2F8970412C9C2E70ECEDB /* MarqueeSelection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MarqueeSelection.swift; sourceTree = "<group>"; };
 		41C45AC31E9E4A2F9E5F1E58 /* ScreenshotImporter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScreenshotImporter.swift; sourceTree = "<group>"; };
 		4BB90F98394E20915ACAA50B /* RetentionServiceTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RetentionServiceTests.swift; sourceTree = "<group>"; };
 		5737B87D86D439E00A0E3845 /* LibraryPaths.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LibraryPaths.swift; sourceTree = "<group>"; };
@@ -161,6 +165,7 @@
 				AAAC46A74C8D02774B5BA552 /* LibrarySection.swift */,
 				A4D24A6EE3E93EA226762974 /* LibraryToolbar.swift */,
 				B46EF5FEE8524A8F06D1FDB6 /* LibraryView.swift */,
+				41A2F8970412C9C2E70ECEDB /* MarqueeSelection.swift */,
 				B1E6EA5AE873AE5FBD0B2115 /* ScreenshotGrid.swift */,
 			);
 			path = Library;
@@ -172,6 +177,7 @@
 				7D62DDE867513746DA7FB88D /* CaptureLocationServiceTests.swift */,
 				EC8DD368B641AF40E1365168 /* DesktopCleanupServiceTests.swift */,
 				6F9BC412578A22A981B726BB /* ImportKindTests.swift */,
+				1ABE43FBF960C331A6ABDCB2 /* MarqueeSelectionTests.swift */,
 				2F6CF947E6EA783FCC7C0626 /* MenuBarPanelRenderingTests.swift */,
 				5CC5FB43E79F93E342E13F7E /* PasteboardServiceTests.swift */,
 				B418B8AD6BA9EA968412D34B /* RetentionPolicyTests.swift */,
@@ -366,6 +372,7 @@
 				9067DC3FCA84461678B8405C /* LibrarySection.swift in Sources */,
 				C76AD7AEEB884EC5FE08B2E7 /* LibraryToolbar.swift in Sources */,
 				E9BE3AB4173F52DB26B85027 /* LibraryView.swift in Sources */,
+				EAF20D9CDF21B6C06BD68713 /* MarqueeSelection.swift in Sources */,
 				7F9D92363586F6B4415B3C56 /* MenuBarPanel.swift in Sources */,
 				664E3787A38268424AD938BE /* PasteboardService.swift in Sources */,
 				513443E45A53E002E4034FAC /* RetentionService.swift in Sources */,
@@ -389,6 +396,7 @@
 				61E5DC76C20205641F23951F /* CaptureLocationServiceTests.swift in Sources */,
 				061D70CB83A19C35A9AA2429 /* DesktopCleanupServiceTests.swift in Sources */,
 				71F3607344058556D29D936A /* ImportKindTests.swift in Sources */,
+				5C4458D5349C702EE660FB37 /* MarqueeSelectionTests.swift in Sources */,
 				788403ADA0657F94E24B864C /* MenuBarPanelRenderingTests.swift in Sources */,
 				1F6DF757B52513C7B35A41E1 /* PasteboardServiceTests.swift in Sources */,
 				1B54CE711777954646522E22 /* RetentionPolicyTests.swift in Sources */,
