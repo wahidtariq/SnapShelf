@@ -4,6 +4,11 @@ options:
   deploymentTarget:
     macOS: "26.0"
   createIntermediateGroups: true
+  # XcodeGen otherwise explodes .icon bundles into loose per-file
+  # references instead of one file reference (xcodegen/XcodeGen#1556).
+  fileTypes:
+    icon:
+      file: true
 
 configs:
   Debug: debug

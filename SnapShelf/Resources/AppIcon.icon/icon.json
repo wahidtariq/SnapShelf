@@ -1,0 +1,82 @@
+{
+  "fill-specializations" : [
+    {
+      "value" : {
+        "linear-gradient" : [
+          "srgb:0.05490,0.64706,0.62745,1.00000",
+          "srgb:0.03137,0.56863,0.69804,1.00000"
+        ],
+        "orientation" : {
+          "start" : { "x" : 0, "y" : 0 },
+          "stop" : { "x" : 1, "y" : 1 }
+        }
+      }
+    },
+    {
+      "appearance" : "dark",
+      "value" : {
+        "linear-gradient" : [
+          "srgb:0.01961,0.23137,0.23922,1.00000",
+          "srgb:0.02745,0.23137,0.29804,1.00000"
+        ],
+        "orientation" : {
+          "start" : { "x" : 0, "y" : 0 },
+          "stop" : { "x" : 1, "y" : 1 }
+        }
+      }
+    }
+  ],
+  "groups" : [
+    {
+      "name" : "Viewfinder Brackets",
+      "layers" : [
+        {
+          "name" : "Brackets",
+          "image-name" : "brackets.png",
+          "glass" : true
+        }
+      ],
+      "lighting" : "individual",
+      "specular" : true,
+      "blur-material" : 0.5,
+      "shadow" : {
+        "kind" : "automatic",
+        "opacity" : 0.5
+      },
+      "translucency" : {
+        "enabled" : true,
+        "value" : 0.15
+      }
+    },
+    {
+      "name" : "Card Stack",
+      "layers" : [
+        {
+          "name" : "Front Card",
+          "image-name" : "card-front.png",
+          "glass" : true
+        },
+        {
+          "name" : "Back Card",
+          "image-name" : "card-back.png",
+          "glass" : true,
+          "opacity" : 0.55
+        }
+      ],
+      "lighting" : "individual",
+      "specular" : true,
+      "blur-material" : 0.5,
+      "shadow" : {
+        "kind" : "automatic",
+        "opacity" : 0.5
+      },
+      "translucency" : {
+        "enabled" : true,
+        "value" : 0.15
+      }
+    }
+  ],
+  "supported-platforms" : {
+    "squares" : "shared"
+  }
+}

@@ -18,6 +18,7 @@
 		46AC7A730A48297BF59A8388 /* RetentionServiceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4BB90F98394E20915ACAA50B /* RetentionServiceTests.swift */; };
 		48FFF71EBD51361642D0DD10 /* LibraryPaths.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5737B87D86D439E00A0E3845 /* LibraryPaths.swift */; };
 		513443E45A53E002E4034FAC /* RetentionService.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE9C3C08F2255E564DACBDDA /* RetentionService.swift */; };
+		54614DF8AB95639D853311A4 /* AppIcon.icon in Resources */ = {isa = PBXBuildFile; fileRef = 1C5530CA14DE56B2ED8AAE02 /* AppIcon.icon */; };
 		59D5FBEDEF1E3B79CA1A757C /* TextRecognitionService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9752D971D040B08F9055AF90 /* TextRecognitionService.swift */; };
 		5EFA4081D66F60E9AF9F0400 /* AppState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D779E0908A7D95F53FFD618 /* AppState.swift */; };
 		61E5DC76C20205641F23951F /* CaptureLocationServiceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7D62DDE867513746DA7FB88D /* CaptureLocationServiceTests.swift */; };
@@ -63,6 +64,7 @@
 		092CF80C4EFCE9E5448E3783 /* SnapShelfTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = SnapShelfTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		0AABAEF46452007F5B365F1A /* CopiedToast.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CopiedToast.swift; sourceTree = "<group>"; };
 		1B51BA2E3F3117DABBCB17BB /* SingleInstanceCoordinator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SingleInstanceCoordinator.swift; sourceTree = "<group>"; };
+		1C5530CA14DE56B2ED8AAE02 /* AppIcon.icon */ = {isa = PBXFileReference; path = AppIcon.icon; sourceTree = "<group>"; };
 		2815321E5C3BBA842D0CA04B /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
 		2F6CF947E6EA783FCC7C0626 /* MenuBarPanelRenderingTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MenuBarPanelRenderingTests.swift; sourceTree = "<group>"; };
 		3C4D07DF10CC24F8C97FC951 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
@@ -226,6 +228,7 @@
 		CF089AC047E115A58A8E7D70 /* Resources */ = {
 			isa = PBXGroup;
 			children = (
+				1C5530CA14DE56B2ED8AAE02 /* AppIcon.icon */,
 				B90F33D57F95A9A25F2EC4FE /* Assets.xcassets */,
 			);
 			path = Resources;
@@ -336,6 +339,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				54614DF8AB95639D853311A4 /* AppIcon.icon in Resources */,
 				0B65D8A5AC224DF86E77F835 /* Assets.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
