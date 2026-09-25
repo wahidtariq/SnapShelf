@@ -157,6 +157,36 @@ struct ScreenshotImporterTests {
         #expect(rows.isEmpty)
     }
 
+    @Test("A mixed batch returns only the imported screenshot, for auto-copy to use")
+    func importFilesReturnsOnlyImportedScreenshots() async throws {
+        let container = try makeContainer()
+        let importer = ScreenshotImporter(modelContainer: container)
+        let sourceDir = try makeTempDir("source")
+        let libraryRoot = try makeTempDir("library")
+        let recordingsRoot = try makeTempDir("recordings")
+        defer {
+            try? FileManager.default.removeItem(at: sourceDir)
+            try? FileManager.default.removeItem(at: libraryRoot)
+            try? FileManager.default.removeItem(at: recordingsRoot)
+        }
+
+        let pngURL = try writePNGFile(named: "Screenshot Batch.png", in: sourceDir)
+        let movURL = sourceDir.appendingPathComponent("Screen Recording.mov")
+        try Data("movie-bytes".utf8).write(to: movURL)
+        let txtURL = sourceDir.appendingPathComponent("notes.txt")
+        try Data("hello".utf8).write(to: txtURL)
+
+        let imported = await importer.importFiles(
+            at: [movURL, pngURL, txtURL],
+            libraryRoot: libraryRoot,
+            screenRecordingsRoot: recordingsRoot
+        )
+
+        let row = try #require(try container.mainContext.fetch(FetchDescriptor<Screenshot>()).first)
+        #expect(imported == [row.persistentModelID])
+        #expect(row.originalName == "Screenshot Batch")
+    }
+
     @Test(arguments: ["Pasted Image", "Pasted Image.png", "Pasted Image.PNG"])
     func importImageAppendsPNGExtensionOnlyWhenMissing(suggestedName: String) async throws {
         let container = try makeContainer()

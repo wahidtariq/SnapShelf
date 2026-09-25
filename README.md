@@ -12,6 +12,7 @@ SnapShelf is a personal macOS menu bar app. It redirects where macOS saves new s
   - Drag a tile out of the popover as a real file.
   - Hover a tile for Copy / Favorite / Delete actions.
   - Navigate with the keyboard (arrows, Return, ⌘1–⌘9).
+- Optional auto-copy: every new screenshot goes straight to the clipboard, ready to paste (Settings → General).
 - Global shortcut to open/close the popover — ⌥⌘S by default, customizable in Settings.
 - A separate Library window with four sections (All Screenshots, Today, Favorites, Recently Deleted), search that also matches text *inside* screenshots (Vision OCR), Quick Look, an inspector, and paste/drag-and-drop import.
 - Retention settings (auto-expire old screenshots), one-tap Desktop cleanup, and launch at login.

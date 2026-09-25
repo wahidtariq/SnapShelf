@@ -34,15 +34,17 @@ nonisolated enum ImportKind: Equatable {
 actor ScreenshotImporter {
     private let textRecognitionService = TextRecognitionService()
 
-    /// Imports every ready URL from the inbox, one at a time. `libraryRoot` and
+    /// Imports every ready URL from the inbox, one at a time, returning the screenshots that made
+    /// it into the library (recordings and ignored files aren't included). `libraryRoot` and
     /// `screenRecordingsRoot` default to the real `LibraryPaths` locations; overridable so tests
     /// can point imports at temporary folders instead.
+    @discardableResult
     func importFiles(
         at urls: [URL],
         libraryRoot: URL = LibraryPaths.library,
         screenRecordingsRoot: URL = LibraryPaths.screenRecordings
-    ) async {
-        for url in urls {
+    ) async -> [PersistentIdentifier] {
+        urls.compactMap { url in
             importFile(at: url, libraryRoot: libraryRoot, screenRecordingsRoot: screenRecordingsRoot)
         }
     }
@@ -161,20 +163,21 @@ actor ScreenshotImporter {
         }
     }
 
-    private func importFile(at url: URL, libraryRoot: URL, screenRecordingsRoot: URL) {
+    private func importFile(at url: URL, libraryRoot: URL, screenRecordingsRoot: URL) -> PersistentIdentifier? {
         switch ImportKind.classify(url) {
         case .image:
-            importImageFile(at: url, libraryRoot: libraryRoot)
+            return importImageFile(at: url, libraryRoot: libraryRoot)
         case .movie:
             importMovieFile(at: url, screenRecordingsRoot: screenRecordingsRoot)
+            return nil
         case .ignore:
-            break
+            return nil
         }
     }
 
-    private func importImageFile(at url: URL, libraryRoot: URL) {
+    private func importImageFile(at url: URL, libraryRoot: URL) -> PersistentIdentifier? {
         let fm = FileManager.default
-        guard fm.fileExists(atPath: url.path) else { return }
+        guard fm.fileExists(atPath: url.path) else { return nil }
 
         let attributes = try? fm.attributesOfItem(atPath: url.path)
         let createdAt = (attributes?[.creationDate] as? Date) ?? Date()
@@ -192,7 +195,7 @@ actor ScreenshotImporter {
             try fm.createDirectory(at: destinationDirectory, withIntermediateDirectories: true)
             try fm.moveItem(at: url, to: destinationURL)
         } catch {
-            return
+            return nil
         }
 
         guard let id2 = try? insertScreenshot(
@@ -204,8 +207,9 @@ actor ScreenshotImporter {
             pixelWidth: pixelWidth,
             pixelHeight: pixelHeight,
             byteSize: byteSize
-        ) else { return }
+        ) else { return nil }
         queueTextRecognition(for: id2)
+        return id2
     }
 
     /// Shared insert-and-save for the three import entry points above.

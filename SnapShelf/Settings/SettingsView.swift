@@ -27,6 +27,7 @@ struct SettingsView: View {
 
 private struct GeneralSettingsTab: View {
     @Environment(AppState.self) private var appState
+    @AppStorage(AppState.autoCopyNewScreenshotsKey) private var autoCopyNewScreenshots = false
 
     var body: some View {
         Form {
@@ -40,6 +41,13 @@ private struct GeneralSettingsTab: View {
                 }
 
                 KeyboardShortcuts.Recorder("Show SnapShelf:", name: .togglePanel)
+            }
+
+            Section {
+                Toggle("Copy new screenshots to the clipboard", isOn: $autoCopyNewScreenshots)
+                Text("Every screenshot you take is ready to paste straight away.")
+                    .font(.footnote)
+                    .foregroundStyle(.secondary)
             }
 
             Section {

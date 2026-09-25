@@ -30,6 +30,9 @@ final class AppState {
     let retentionService: RetentionService
     let desktopCleanupService: DesktopCleanupService
 
+    /// `UserDefaults` key for Settings → General → "Copy new screenshots to the clipboard".
+    static let autoCopyNewScreenshotsKey = "autoCopyNewScreenshots"
+
     var isMenuPresented = false
     var copiedToast: String?
 
@@ -115,11 +118,25 @@ final class AppState {
 
     private func handleReadyFiles(_ urls: [URL]) {
         Task {
-            await importer.importFiles(at: urls)
+            let imported = await importer.importFiles(at: urls)
             for url in urls {
                 inboxWatcher?.markComplete(url)
             }
+            copyNewestIfEnabled(imported)
         }
+    }
+
+    /// Puts the newest of a batch of fresh captures on the clipboard, so it's ready to paste
+    /// without opening the popover. Only inbox captures come through here — Library paste/drop
+    /// and Desktop cleanup never replace the clipboard.
+    private func copyNewestIfEnabled(_ ids: [PersistentIdentifier]) {
+        guard UserDefaults.standard.bool(forKey: Self.autoCopyNewScreenshotsKey) else { return }
+        let context = modelContainer.mainContext
+        let newest = ids
+            .compactMap { context.model(for: $0) as? Screenshot }
+            .max { $0.createdAt < $1.createdAt }
+        guard let newest else { return }
+        pasteboardService.copy([newest])
     }
 
     /// Shows a transient "Copied" confirmation in the popover, clearing itself after ~1s.
