@@ -1,0 +1,80 @@
+name: SnapShelf
+options:
+  bundleIdPrefix: dev.wahidtariq
+  deploymentTarget:
+    macOS: "26.0"
+  createIntermediateGroups: true
+
+configs:
+  Debug: debug
+  Release: release
+
+settings:
+  base:
+    SWIFT_VERSION: "6.0"
+    SWIFT_DEFAULT_ACTOR_ISOLATION: MainActor
+    SWIFT_APPROACHABLE_CONCURRENCY: YES
+    ENABLE_HARDENED_RUNTIME: YES
+    CODE_SIGN_STYLE: Automatic
+    CODE_SIGN_IDENTITY: "-"
+    MARKETING_VERSION: "1.0"
+    CURRENT_PROJECT_VERSION: "1"
+    ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
+    ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME: AccentColor
+
+packages:
+  MenuBarExtraAccess:
+    url: https://github.com/orchetect/MenuBarExtraAccess
+    from: 1.3.1
+  KeyboardShortcuts:
+    url: https://github.com/sindresorhus/KeyboardShortcuts
+    from: 1.9.4
+
+targets:
+  SnapShelf:
+    type: application
+    platform: macOS
+    sources:
+      - path: SnapShelf
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: dev.wahidtariq.SnapShelf
+        GENERATE_INFOPLIST_FILE: YES
+        INFOPLIST_KEY_LSUIElement: YES
+        INFOPLIST_KEY_CFBundleDisplayName: SnapShelf
+        INFOPLIST_KEY_NSDesktopFolderUsageDescription: "SnapShelf imports existing screenshots from your Desktop so it can tidy them away."
+        INFOPLIST_KEY_LSApplicationCategoryType: public.app-category.productivity
+        INFOPLIST_KEY_NSHumanReadableCopyright: ""
+        ENABLE_PREVIEWS: YES
+    dependencies:
+      - package: MenuBarExtraAccess
+      - package: KeyboardShortcuts
+
+  SnapShelfTests:
+    type: bundle.unit-test
+    platform: macOS
+    sources:
+      - path: SnapShelfTests
+    settings:
+      base:
+        GENERATE_INFOPLIST_FILE: YES
+        BUNDLE_LOADER: "$(TEST_HOST)"
+        TEST_HOST: "$(BUILT_PRODUCTS_DIR)/SnapShelf.app/Contents/MacOS/SnapShelf"
+    dependencies:
+      - target: SnapShelf
+        embed: false
+
+schemes:
+  SnapShelf:
+    build:
+      targets:
+        SnapShelf: all
+        SnapShelfTests: [test]
+    run:
+      config: Debug
+    test:
+      config: Debug
+      targets:
+        - SnapShelfTests
+    archive:
+      config: Release
