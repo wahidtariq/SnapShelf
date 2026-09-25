@@ -1,5 +1,7 @@
 # SnapShelf
 
+[![CI](https://github.com/wahidtariq/SnapShelf/actions/workflows/ci.yml/badge.svg)](https://github.com/wahidtariq/SnapShelf/actions/workflows/ci.yml)
+
 Every ⇧⌘3/4/5 screenshot goes into a menu bar library instead of cluttering the Desktop.
 
 SnapShelf is a personal macOS menu bar app. It redirects where macOS saves new screenshots, imports them into a searchable library, and gets out of the way — no Dock icon, no extra windows unless you open them.
@@ -79,6 +81,15 @@ Command-line build and test:
 ```bash
 xcodebuild -project SnapShelf.xcodeproj -scheme SnapShelf -destination 'platform=macOS' build
 xcodebuild -project SnapShelf.xcodeproj -scheme SnapShelf -destination 'platform=macOS' test
+```
+
+### Continuous integration
+
+[`.github/workflows/ci.yml`](.github/workflows/ci.yml) builds and runs the tests on every push to `main` and every pull request, on GitHub's `macos-26` runner with its default Xcode. CI has no signing certificate, so it signs ad hoc and turns off the hardened runtime; to reproduce a CI run locally:
+
+```bash
+xcodebuild test -project SnapShelf.xcodeproj -scheme SnapShelf -destination 'platform=macOS' \
+    CODE_SIGN_IDENTITY=- CODE_SIGN_STYLE=Manual DEVELOPMENT_TEAM= ENABLE_HARDENED_RUNTIME=NO
 ```
 
 ### Dependencies

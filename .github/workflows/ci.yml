@@ -1,0 +1,64 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+# A newer push to the same branch or PR makes the older run pointless.
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  test:
+    name: Build & test
+    # Deployment target is macOS 26, so this needs the macOS 26 SDK (Xcode 26+). Uses the image's
+    # default Xcode, printed below.
+    runs-on: macos-26
+    timeout-minutes: 30
+
+    steps:
+      - uses: actions/checkout@v5
+
+      - name: Show toolchain
+        run: |
+          sw_vers
+          xcodebuild -version
+
+      - name: Cache Swift packages
+        uses: actions/cache@v4
+        with:
+          path: .build/SourcePackages
+          key: spm-${{ runner.os }}-${{ hashFiles('SnapShelf.xcodeproj/project.xcworkspace/xcshareddata/swiftpm/Package.resolved') }}
+
+      # CI has no signing certificate for the Personal Team in project.yml, so it signs ad hoc
+      # instead. Hardened runtime is off because its library validation would refuse to load the
+      # ad-hoc-signed test bundle into the app it tests.
+      - name: Build and test
+        run: |
+          set -o pipefail
+          xcodebuild test \
+            -project SnapShelf.xcodeproj \
+            -scheme SnapShelf \
+            -destination 'platform=macOS' \
+            -derivedDataPath .build/DerivedData \
+            -clonedSourcePackagesDirPath .build/SourcePackages \
+            -resultBundlePath .build/TestResults.xcresult \
+            -skipMacroValidation \
+            -quiet \
+            CODE_SIGN_IDENTITY=- \
+            CODE_SIGN_STYLE=Manual \
+            DEVELOPMENT_TEAM= \
+            ENABLE_HARDENED_RUNTIME=NO
+
+      - name: Upload test results
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: TestResults
+          path: .build/TestResults.xcresult
