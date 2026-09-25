@@ -32,6 +32,8 @@ final class AppState {
 
     /// `UserDefaults` key for Settings → General → "Copy new screenshots to the clipboard".
     static let autoCopyNewScreenshotsKey = "autoCopyNewScreenshots"
+    /// `UserDefaults` key for Settings → General → "Open Markup after taking a screenshot".
+    static let openMarkupAfterCaptureKey = "openMarkupAfterCapture"
 
     var isMenuPresented = false
     var copiedToast: String?
@@ -40,6 +42,8 @@ final class AppState {
     /// is rendered at launch, unlike the popover content). Lets `AppDelegate` open the Library
     /// window on Dock reopen without a view of its own to read the environment from.
     var openLibraryWindow: (() -> Void)?
+    /// Captured the same way as `openLibraryWindow`; opens the Markup window for a screenshot.
+    var openMarkupWindow: ((UUID) -> Void)?
 
     /// `captureLocationService` defaults to the real `com.apple.screencapture` domain; overridable
     /// so tests can inject one backed by a fake preferences store instead — nothing in
@@ -122,21 +126,27 @@ final class AppState {
             for url in urls {
                 inboxWatcher?.markComplete(url)
             }
-            copyNewestIfEnabled(imported)
+            handleNewCaptures(imported)
         }
     }
 
-    /// Puts the newest of a batch of fresh captures on the clipboard, so it's ready to paste
-    /// without opening the popover. Only inbox captures come through here — Library paste/drop
-    /// and Desktop cleanup never replace the clipboard.
-    private func copyNewestIfEnabled(_ ids: [PersistentIdentifier]) {
-        guard UserDefaults.standard.bool(forKey: Self.autoCopyNewScreenshotsKey) else { return }
+    /// Applies the after-capture settings to the newest of a batch of fresh captures: copy it so
+    /// it's ready to paste, and/or open it in Markup. Only inbox captures come through here —
+    /// Library paste/drop and Desktop cleanup never replace the clipboard or open an editor.
+    private func handleNewCaptures(_ ids: [PersistentIdentifier]) {
+        let defaults = UserDefaults.standard
+        let shouldCopy = defaults.bool(forKey: Self.autoCopyNewScreenshotsKey)
+        let shouldOpenMarkup = defaults.bool(forKey: Self.openMarkupAfterCaptureKey)
+        guard shouldCopy || shouldOpenMarkup else { return }
+
         let context = modelContainer.mainContext
         let newest = ids
             .compactMap { context.model(for: $0) as? Screenshot }
             .max { $0.createdAt < $1.createdAt }
         guard let newest else { return }
-        pasteboardService.copy([newest])
+
+        if shouldCopy { pasteboardService.copy([newest]) }
+        if shouldOpenMarkup { openMarkupWindow?(newest.id) }
     }
 
     /// Shows a transient "Copied" confirmation in the popover, clearing itself after ~1s.

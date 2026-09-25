@@ -41,6 +41,20 @@ struct SnapShelfApp: App {
             LibraryCommands()
         }
 
+        WindowGroup("Markup", id: "markup", for: UUID.self) { $screenshotID in
+            if let screenshotID {
+                MarkupEditorView(screenshotID: screenshotID)
+                    .environment(appState)
+                    .modelContainer(appState.modelContainer)
+                    .trackingWindowActivation()
+            }
+        }
+        .defaultLaunchBehavior(.suppressed)
+        .restorationBehavior(.disabled)
+        .defaultSize(width: 1100, height: 760)
+        // Otherwise SwiftUI adds a File → New Markup Window item, which has no screenshot to open.
+        .commandsRemoved()
+
         Window("Welcome to SnapShelf", id: "welcome") {
             WelcomeView()
                 .environment(appState)
@@ -73,6 +87,11 @@ private struct MenuBarLabel: View {
                     NSApp.setActivationPolicy(.regular)
                     NSApp.activate()
                     openWindow(id: "library")
+                }
+                appState.openMarkupWindow = { screenshotID in
+                    NSApp.setActivationPolicy(.regular)
+                    NSApp.activate()
+                    openWindow(id: "markup", value: screenshotID)
                 }
             }
     }

@@ -19,6 +19,7 @@ struct ScreenshotGrid: View {
 
     @Environment(AppState.self) private var appState
     @Environment(\.modelContext) private var modelContext
+    @Environment(\.openWindow) private var openWindow
 
     @Query private var screenshots: [Screenshot]
 
@@ -443,6 +444,9 @@ struct ScreenshotGrid: View {
         } else {
             Button("Copy") { appState.pasteboardService.copy(targets) }
             Button("Open in Preview") { openInPreview(targets) }
+            if targets.count == 1 {
+                Button("Markup…") { openWindow(id: "markup", value: targets[0].id) }
+            }
             ShareLink("Share…", items: targets.map(\.fileURL))
             if targets.count == 1 {
                 Button("Save As…") { saveAs(targets[0]) }
@@ -623,6 +627,11 @@ struct ScreenshotGrid: View {
     private var libraryActions: LibraryActions {
         LibraryActions(
             hasSelection: !selectedIDs.isEmpty,
+            canMarkup: section != .recentlyDeleted && selectedIDs.count == 1,
+            markup: {
+                guard let screenshot = orderedSelection().first else { return }
+                openWindow(id: "markup", value: screenshot.id)
+            },
             quickLook: { quickLookURL = orderedSelection().first?.fileURL },
             openInPreview: { openInPreview(orderedSelection()) },
             toggleFavorite: {

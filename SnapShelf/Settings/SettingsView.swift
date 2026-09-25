@@ -28,6 +28,7 @@ struct SettingsView: View {
 private struct GeneralSettingsTab: View {
     @Environment(AppState.self) private var appState
     @AppStorage(AppState.autoCopyNewScreenshotsKey) private var autoCopyNewScreenshots = false
+    @AppStorage(AppState.openMarkupAfterCaptureKey) private var openMarkupAfterCapture = false
 
     var body: some View {
         Form {
@@ -48,6 +49,8 @@ private struct GeneralSettingsTab: View {
                 Text("Every screenshot you take is ready to paste straight away.")
                     .font(.footnote)
                     .foregroundStyle(.secondary)
+
+                Toggle("Open Markup after taking a screenshot", isOn: $openMarkupAfterCapture)
             }
 
             Section {

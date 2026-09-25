@@ -247,6 +247,7 @@ struct MenuBarPanelRenderingTests {
                     isSelected: false,
                     onCopy: {},
                     onToggleFavorite: {},
+                    onMarkup: {},
                     onDelete: {}
                 )
             }

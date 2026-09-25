@@ -7,6 +7,9 @@ import SwiftUI
 /// singleton or a direct view reference.
 struct LibraryActions {
     var hasSelection: Bool
+    /// Markup edits one screenshot at a time, and not ones in Recently Deleted.
+    var canMarkup: Bool
+    var markup: () -> Void
     var quickLook: () -> Void
     var openInPreview: () -> Void
     var toggleFavorite: () -> Void
@@ -44,6 +47,10 @@ struct LibraryCommands: Commands {
             Button("Open in Preview") { actions?.openInPreview() }
                 .keyboardShortcut("o", modifiers: .command)
                 .disabled(!(actions?.hasSelection ?? false))
+
+            Button("Markup…") { actions?.markup() }
+                .keyboardShortcut("a", modifiers: [.command, .shift])
+                .disabled(!(actions?.canMarkup ?? false))
 
             Button("Add to Favorites") { actions?.toggleFavorite() }
                 .keyboardShortcut("f", modifiers: [.command, .shift])

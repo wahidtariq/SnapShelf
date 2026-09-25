@@ -202,6 +202,7 @@ struct MenuBarPanel: View {
                                 isSelected: selectedIndex == index,
                                 onCopy: { selectedIndex = index; copy(screenshot) },
                                 onToggleFavorite: { screenshot.isFavorite.toggle() },
+                                onMarkup: { activateAndOpen { openWindow(id: "markup", value: screenshot.id) } },
                                 onDelete: { screenshot.deletedAt = Date() }
                             )
                             .id(screenshot.id)

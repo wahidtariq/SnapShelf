@@ -1,6 +1,6 @@
 import SwiftUI
 
-/// A single tile in the popover grid: click to copy, hover for Copy/Favorite/Delete controls and
+/// A single tile in the popover grid: click to copy, hover for Copy/Favorite/Markup/Delete controls and
 /// a relative time label, drag out for a real file. Not itself a `Button` — a real `Button`
 /// wrapping content that contains other `Button`s (the hover controls) doesn't hit-test
 /// correctly, so the tap-to-copy gesture uses `onTapGesture` instead.
@@ -9,6 +9,7 @@ struct ScreenshotTile: View {
     let isSelected: Bool
     let onCopy: () -> Void
     let onToggleFavorite: () -> Void
+    let onMarkup: () -> Void
     let onDelete: () -> Void
 
     @State private var isHovering = false
@@ -67,6 +68,7 @@ struct ScreenshotTile: View {
                     help: screenshot.isFavorite ? "Remove from Favorites" : "Add to Favorites",
                     action: onToggleFavorite
                 )
+                overlayButton(systemImage: "pencil.tip.crop.circle", help: "Markup", action: onMarkup)
                 overlayButton(systemImage: "trash", help: "Delete", action: onDelete)
                 Spacer(minLength: 0)
             }
