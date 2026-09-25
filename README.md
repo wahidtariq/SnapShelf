@@ -88,6 +88,18 @@ Two Swift packages, declared in `project.yml` and pinned in `Package.resolved`:
 | [MenuBarExtraAccess](https://github.com/orchetect/MenuBarExtraAccess) | 1.3.1 | 1.3.1 |
 | [KeyboardShortcuts](https://github.com/sindresorhus/KeyboardShortcuts) | 1.9.4 | 1.17.0 |
 
+## Install
+
+To run SnapShelf every day instead of launching it from Xcode:
+
+```bash
+make install          # or: ./scripts/install.sh
+```
+
+This builds a signed Release copy and installs it to `/Applications/SnapShelf.app`, quitting any running copy first. Then turn on **Settings → General → Open at Login** in the installed copy.
+
+Running from Xcode (⌘R) temporarily takes over from the installed copy — the newest launch wins, asking the other running copy to quit. Stop the Xcode run and reopen `/Applications/SnapShelf.app` to go back to the installed copy.
+
 ## First launch
 
 The Welcome window opens automatically the first time you launch SnapShelf, offering:
@@ -145,7 +157,7 @@ After that, you can optionally delete `~/Library/Application Support/SnapShelf` 
 ## Notes & limitations
 
 - **Not sandboxed.** SnapShelf edits another app's (`com.apple.screencapture`'s) preferences, which the App Sandbox doesn't allow — so it isn't, and can't be, Mac App Store-ready.
-- **Ad-hoc signed by default** (`CODE_SIGN_IDENTITY: "-"` in `project.yml`). Launch at login is only reliable from a signed copy running in `/Applications` — a Debug build launched from Xcode registers DerivedData's copy as the login item instead.
+- **Signed with a Personal Team** (`DEVELOPMENT_TEAM: M233Y22CJD` in `project.yml`), automatically. Launch at login is only reliable from a signed copy running in `/Applications` (see [Install](#install)) — a Debug build launched from Xcode registers DerivedData's copy as the login item instead.
 - **No app icon yet** — `AppIcon.appiconset` only has slot definitions, no actual images.
 - **PDFs are skipped for OCR.** `TextRecognitionService` returns an empty string for PDFs rather than rendering a page through Core Graphics first; screenshots are overwhelmingly PNG/HEIC in practice.
 

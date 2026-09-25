@@ -17,24 +17,10 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         // from under the test runner.
         guard ProcessInfo.processInfo.environment["XCTestConfigurationFilePath"] == nil else { return }
 
-        terminateIfAnotherInstanceIsRunning()
+        // See SingleInstanceCoordinator for why this differs between Release and Debug.
+        SingleInstanceCoordinator.resolve()
 
         AppState.shared?.start()
-    }
-
-    /// Two copies built to different DerivedData folders (e.g. Xcode vs. a CI build) share the
-    /// same bundle identifier but run as separate processes — if both launch, both watch the
-    /// inbox and race each other to import the same files. When another instance is already
-    /// running, bring it forward and quit this one instead of starting up alongside it.
-    private func terminateIfAnotherInstanceIsRunning() {
-        guard let bundleID = Bundle.main.bundleIdentifier else { return }
-        let currentPID = ProcessInfo.processInfo.processIdentifier
-        let others = NSRunningApplication.runningApplications(withBundleIdentifier: bundleID)
-            .filter { $0.processIdentifier != currentPID }
-        guard let other = others.first else { return }
-
-        other.activate()
-        NSApp.terminate(nil)
     }
 
     /// Reopening SnapShelf from Finder or Spotlight (with no visible windows) opens the Library,

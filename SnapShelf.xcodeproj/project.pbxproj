@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		061D70CB83A19C35A9AA2429 /* DesktopCleanupServiceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = EC8DD368B641AF40E1365168 /* DesktopCleanupServiceTests.swift */; };
 		0B65D8A5AC224DF86E77F835 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = B90F33D57F95A9A25F2EC4FE /* Assets.xcassets */; };
+		10FA2D704583F9BCEDD1992C /* SingleInstanceCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1B51BA2E3F3117DABBCB17BB /* SingleInstanceCoordinator.swift */; };
 		125E76F26C649C29DC35B8E2 /* LaunchAtLoginService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9228B57EBF50244BF4C5A695 /* LaunchAtLoginService.swift */; };
 		1A9D811A935BBCFDB64E516F /* Screenshot.swift in Sources */ = {isa = PBXBuildFile; fileRef = 055D17D3206EF5BD44B97FA7 /* Screenshot.swift */; };
 		1B54CE711777954646522E22 /* RetentionPolicyTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B418B8AD6BA9EA968412D34B /* RetentionPolicyTests.swift */; };
@@ -61,6 +62,7 @@
 		055D17D3206EF5BD44B97FA7 /* Screenshot.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Screenshot.swift; sourceTree = "<group>"; };
 		092CF80C4EFCE9E5448E3783 /* SnapShelfTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = SnapShelfTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		0AABAEF46452007F5B365F1A /* CopiedToast.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CopiedToast.swift; sourceTree = "<group>"; };
+		1B51BA2E3F3117DABBCB17BB /* SingleInstanceCoordinator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SingleInstanceCoordinator.swift; sourceTree = "<group>"; };
 		2815321E5C3BBA842D0CA04B /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
 		2F6CF947E6EA783FCC7C0626 /* MenuBarPanelRenderingTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MenuBarPanelRenderingTests.swift; sourceTree = "<group>"; };
 		3C4D07DF10CC24F8C97FC951 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
@@ -134,6 +136,7 @@
 				3C4D07DF10CC24F8C97FC951 /* AppDelegate.swift */,
 				EBCAFDF7BB91538035D1D45D /* AppShortcuts.swift */,
 				5D779E0908A7D95F53FFD618 /* AppState.swift */,
+				1B51BA2E3F3117DABBCB17BB /* SingleInstanceCoordinator.swift */,
 				C95A2B840879410887BD8BAE /* SnapShelfApp.swift */,
 			);
 			path = App;
@@ -295,9 +298,11 @@
 				LastUpgradeCheck = 1430;
 				TargetAttributes = {
 					BE3872F8F7B0C1FD05713A30 = {
+						DevelopmentTeam = M233Y22CJD;
 						ProvisioningStyle = Automatic;
 					};
 					EFBC795CABC405630213D170 = {
+						DevelopmentTeam = M233Y22CJD;
 						ProvisioningStyle = Automatic;
 					};
 				};
@@ -365,6 +370,7 @@
 				C6100C5D2EB412792930647B /* ScreenshotImporter.swift in Sources */,
 				7347DA91879F62F750C998F5 /* ScreenshotTile.swift in Sources */,
 				AC601114E364CFCB85E014A6 /* SettingsView.swift in Sources */,
+				10FA2D704583F9BCEDD1992C /* SingleInstanceCoordinator.swift in Sources */,
 				71385BC521AEA028DC0E182D /* SnapShelfApp.swift in Sources */,
 				59D5FBEDEF1E3B79CA1A757C /* TextRecognitionService.swift in Sources */,
 				D3513C2C839626F2D07CD106 /* ThumbnailProvider.swift in Sources */,
@@ -492,11 +498,12 @@
 				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
-				CODE_SIGN_IDENTITY = "-";
+				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				COPY_PHASE_STRIP = NO;
 				CURRENT_PROJECT_VERSION = 1;
 				DEBUG_INFORMATION_FORMAT = dwarf;
+				DEVELOPMENT_TEAM = M233Y22CJD;
 				ENABLE_HARDENED_RUNTIME = YES;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
@@ -581,11 +588,12 @@
 				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
-				CODE_SIGN_IDENTITY = "-";
+				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				COPY_PHASE_STRIP = NO;
 				CURRENT_PROJECT_VERSION = 1;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				DEVELOPMENT_TEAM = M233Y22CJD;
 				ENABLE_HARDENED_RUNTIME = YES;
 				ENABLE_NS_ASSERTIONS = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
