@@ -70,6 +70,8 @@ struct MenuBarPanel: View {
         // grid have very different ideal heights, so the window would either clip the taller one
         // or leave dead space under the shorter one.
         .fixedSize(horizontal: false, vertical: true)
+        .background { windowDragArea }
+        .background { HostingWindowReader { appState.menuBarWindowPositioner.attach(to: $0) } }
         .overlay(alignment: .bottom) {
             if let toast = appState.copiedToast {
                 CopiedToast(message: toast)
@@ -139,6 +141,8 @@ struct MenuBarPanel: View {
             .fixedSize()
             .help("More")
         }
+        .contentShape(Rectangle())
+        .gesture(WindowDragGesture())
     }
 
     @ViewBuilder
@@ -203,6 +207,7 @@ struct MenuBarPanel: View {
                             .id(screenshot.id)
                         }
                     }
+                    .background { windowDragArea }
                 }
                 .scrollIndicators(.automatic)
                 .frame(height: Self.gridHeight(forCount: screenshots.count))
@@ -241,6 +246,19 @@ struct MenuBarPanel: View {
         }
         .padding(.vertical, 24)
         .frame(maxWidth: .infinity)
+        .contentShape(Rectangle())
+        .gesture(WindowDragGesture())
+    }
+
+    // MARK: - Moving the popover
+
+    /// Drags the whole popover from any spot that isn't a tile or a control. Tiles sit on top of
+    /// this, so their click-to-copy and file drag-out are unaffected. `MenuBarWindowPositioner`
+    /// puts the popover back under the menu bar icon when it closes.
+    private var windowDragArea: some View {
+        Color.clear
+            .contentShape(Rectangle())
+            .gesture(WindowDragGesture())
     }
 
     // MARK: - Keyboard

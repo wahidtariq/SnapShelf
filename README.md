@@ -123,6 +123,7 @@ Once enabled, it offers a one-tap **Clean Up Desktop…** to move existing scree
 | Copy tile 1–9 | ⌘1 – ⌘9 |
 | Delete selected screenshot | ⌘⌫ |
 | Open Library | Click the grid icon, or the ⋯ menu |
+| Move the popover | Drag its header or any empty space — it returns under the menu bar icon when closed |
 | Settings / Quit & Restore Desktop Saving | ⋯ menu |
 
 ### Library window

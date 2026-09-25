@@ -20,6 +20,7 @@ final class AppState {
     let thumbnailProvider: ThumbnailProvider
     let launchAtLoginService = LaunchAtLoginService()
     let pasteboardService = PasteboardService()
+    let menuBarWindowPositioner = MenuBarWindowPositioner()
 
     private let importer: ScreenshotImporter
     private var inboxWatcher: InboxWatcher?
